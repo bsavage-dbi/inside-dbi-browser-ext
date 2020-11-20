@@ -1,0 +1,1 @@
+const jiraSite = "https://davidsbridal.atlassian.net/";

@@ -1,0 +1,2 @@
+try{window.performance.mark("skeleton-navigation.js:eval-start")}catch(n){}(window.webpackJsonp=window.webpackJsonp||[]).push([["skeleton-navigation"],{"./src/entry/skeletons/navigation.js":function(n,t){},47:function(n,t,o){n.exports=o("./src/entry/skeletons/navigation.js")}},[[47,"manifest"]]]);try{window.__jsEvalStop("skeleton-navigation.js")}catch(n){}
+//# sourceMappingURL=https://statlas.prod.atl-paas.net/jira-frontend-source-maps/assets/skeleton-navigation.028ae996c3bdff0df342.8.js.map

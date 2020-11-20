@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<!-- saved from url=(0561)https://whoslooking.herokuapp.com/poller?issue_key=DBI-6359&xdm_e=https%3A%2F%2Fborngroup.atlassian.net&xdm_c=channel-whoslooking-connect__whos-looking&cp=&xdm_deprecated_addon_key_do_not_use=whoslooking-connect&lic=none&cv=1001.0.0-SNAPSHOT&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ZGM5YjU5NjA1YjVhZTBkZGQ2ZmE2YTkiLCJxc2giOiI4YWU2YmE3MjJjMDFhMDE0MDVjYjAxYmU1NTU0OWVjOGVlNGYxYjY1ZDM2OTQyMDgyZTMyNGVlNmExMTQxMjI2IiwiaXNzIjoiamlyYTo4NTYzNTg4IiwiY29udGV4dCI6e30sImV4cCI6MTYwNTgyMTkwMCwiaWF0IjoxNjA1ODIxMDAwfQ.I3oaoWGYbPvNQpZYK3cmh_fR6AReAJWkbpOFM3WdFxQ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta version="1.7.25">
+    <meta name="pollIntervalSeconds" content="20">
+    <meta name="avatarSize" content="24">
+    <meta name="hostId" content="jira:8563588">    
+    <meta name="resourceId" content="DBI-6359">
+    <meta name="accountId" content="5dc9b59605b5ae0ddd6fa6a9">
+    
+      <meta name="acpt" content="956ae458438ddc20f902878d80e3214f2a85a9d87bb5a72dc4b7e5039c2e3fc902f90156812d28e25f98d2e418b100f4d477e31aa3f334952bed450e663d2cb4a607daeccaacfaf98ca8f8f1312184afe5c54dd020dd97f68e21659e2080f74d">
+    
+    <meta content="IE=EDGE" http-equiv="X-UA-Compatible">
+    <script src="./jquery.min.js"></script>
+    <script src="./jquery-migrate.min.js"></script>
+    <script src="./sinon.min.js"></script>
+    <script src="./aui.min.js"></script><style type="text/css"></style><style type="text/css"></style>
+    <script src="./aui-experimental.min.js"></script>
+    <script src="./aui-datepicker.min.js"></script>
+    <script src="./lscache.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="./aui.min.css">
+    <link rel="stylesheet" type="text/css" href="./aui-experimental.min.css">
+    <link rel="stylesheet" type="text/css" href="./main.css">
+    <meta name="hostBaseUrl" content="https://borngroup.atlassian.net">
+  <style type="text/css">body {margin: 0 !important;}</style><script src="chrome-extension://mooikfkahbdckldjjndioackbalphokd/assets/prompt.js"></script></head>
+  <body data-aui-version="7.6.0">
+    <div id="whoslooking-onlookers" class="ac-content" style="position: relative;">
+        <p class="whoslooking-onlookers-list" id="whoslooking-onlookers-list"><p><img width="24px" height="24px" src="./useravatar" class="whoslooking-avatar"><a href="https://borngroup.atlassian.net/people/5dc9b59605b5ae0ddd6fa6a9" target="_parent"><span class="whoslooking-displayname">Brian Savage</span></a></p></p>
+    <div class="ac-resize-sensor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: scroll; z-index: -1; visibility: hidden;"><div class="ac-resize-sensor-expand" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: scroll; z-index: -1; visibility: hidden;"><div style="position: absolute; left: 0px; top: 0px; width: 10px; height: 82px;"></div></div><div class="ac-resize-sensor-shrink" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: scroll; z-index: -1; visibility: hidden;"><div style="position: absolute; left: 0; top: 0; width: 200%; height: 200%"></div></div></div></div>
+  
+  <script src="./visibility.min.js"></script>
+  <script src="./sha1.js"></script>
+  <script type="text/javascript" src="./pagetoken.js"></script>
+  <script type="text/javascript" src="./all.js"></script>
+  <script>
+    $(function() {
+      var getMeta = function(name) { return $('meta[name='+name+']').attr("content") };
+      var pollInterval = getMeta('pollIntervalSeconds') * 1000;
+      var avatarSize = getMeta('avatarSize');
+      var hostBaseUrl = getMeta('hostBaseUrl');
+      var hostId = getMeta('hostId');
+      var resourceId = getMeta('resourceId');      
+      var accountId = getMeta('accountId');
+      var localCacheExpiryMinutes = getMeta('localCacheExpiryMinutes');
+      var pollUrl = '/viewables/'+ encodeURIComponent(hostId) +'/'+ encodeURIComponent(resourceId) +'/viewers/'+ accountId;
+
+      var poll = function() {
+        Visibility.hidden() || $.ajax({
+          url: pollUrl,               
+          type: 'PUT',
+          success: function(data) {
+            renderViewerList(data);
+          }
+        });
+      };
+
+      var stopViewing = function() {
+        $.ajax({
+          url: pollUrl,
+          type: 'DELETE'
+        });
+      };
+
+      var getBestName = function(accountId, viewerDetails) {
+          if (viewerDetails && viewerDetails.displayName && viewerDetails.displayName !== accountId) {
+              return viewerDetails.displayName;
+          }
+
+          // No display name retrieved from server. Try local cache.
+          var tentativeDisplayName = lscache.get(accountId);
+          if (tentativeDisplayName) {
+            return tentativeDisplayName;
+          } else {
+              // No display name in local cache. Try retrieving it Jira and then storing in local cache.
+              // This is async, we'll use it next time.
+              AP.request({
+                  url: '/rest/api/3/user?accountId=' + accountId,
+                  headers: {'x-atlassian-force-account-id': 'true'}
+              }).then(function (data) {
+                  var displayName = JSON.parse(data.body).displayName;
+                  if (displayName) {
+                      var localCacheExpiryMinutes = 24*60;
+                      var cacheExpiryJitterMinutes = Math.floor((Math.random() * 20) - 10);
+                      lscache.set(accountId, displayName, localCacheExpiryMinutes + cacheExpiryJitterMinutes)
+                  }
+              }).catch(function (e) {
+                  console.log(e.err);
+              });
+          }
+
+          // No display name retrieved from server or in local cache. Use account ID for now.
+          return accountId;
+      };
+
+      var renderedViewers;
+      var renderViewerList = function(viewers) {
+            
+        var viewerList = $('<p>').addClass('whoslooking-onlookers-list').attr('id', 'whoslooking-onlookers-list');
+        var unresolvedDisplayNames = false;
+        $.each(viewers, function(accountId, details) {
+          var avatarUrl = hostBaseUrl+"/secure/useravatar?ownerId="+encodeURIComponent(accountId);
+
+          var bestName = (details && details.displayName) ? details.displayName : accountId;
+          var viewerListItem = $('<p>');
+          var userLink = $('<a>').attr('href', hostBaseUrl+"/people/"+encodeURIComponent(accountId)).attr('target','_parent');
+          var avatar = $('<img>').attr('width', avatarSize + 'px').attr('height', avatarSize + 'px').attr('src', avatarUrl).addClass('whoslooking-avatar');
+
+          var bestName = getBestName(accountId, details);
+
+          if (bestName !== accountId) {
+              // Looks like we've found a display name
+              var userDisplayName = $('<span>').text(bestName).addClass('whoslooking-displayname');
+              viewerListItem.append(avatar).append(userDisplayName);
+              userDisplayName.wrap(userLink);
+          } else {
+              // No display name retrieved from server. Show account ID for now, with explanation.
+              var userDisplayName = $('<span>').text("User").addClass('whoslooking-displayname');
+              viewerListItem.append(avatar).append(userDisplayName);
+              userDisplayName.wrap(userLink);
+              viewerListItem.append('<small>(*)</small>');
+              unresolvedDisplayNames = true;
+          }
+
+          viewerList.append(viewerListItem);
+        });
+
+        if (unresolvedDisplayNames) {
+            viewerList.append('<small><small> <p>(*) In compliance with GDPR, Jira no longer shares all users\' names with add-ons. Who\'s Looking will attempt to retrieve names for users whose privacy settings allow it.</p> </small></small>');
+        }
+        $('#whoslooking-onlookers-list').replaceWith(viewerList);
+        AP.resize();
+        renderedViewers = viewers;
+
+      }            
+            
+      if (accountId && hostId && resourceId) {
+        window.onbeforeunload = stopViewing;
+        setInterval(poll, pollInterval);
+        Visibility.change(function (e, state) { poll(); });
+        renderViewerList({"5dc9b59605b5ae0ddd6fa6a9":{"displayName":"Brian Savage"}});        
+      }
+  });
+  </script>  
+
+</body></html>

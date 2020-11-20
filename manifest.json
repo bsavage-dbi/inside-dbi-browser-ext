@@ -1,0 +1,75 @@
+{
+  "name": "inside dbi",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "David's Bridal Internal",
+  "homepage_url": "https://davidsbridal.com",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "default_locale": "en",
+  "background": {
+    "page": "src/bg/background.html",
+    "persistent": true
+  },
+  "options_page": "src/options_custom/index.html",
+  "browser_action": {
+    "default_icon": "icons/icon19.png",
+    "default_title": "browser action demo",
+    "default_popup": "src/browser_action/browser_action.html"
+  },
+  "permissions": [
+    "contextMenus",
+    "cookies",
+    "management",
+    "notifications",
+    "tabs",
+    "https://*/* ",
+    "https://davidsbridal.atlassian.net/"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/* ",
+        "https://davidsbridal.atlassian.net/*"
+      ],
+      "all_frames": true,
+      "css": [
+        "src/inject/normalize.css",
+        "src/inject/bootstrap.min.css",
+        "src/inject/buttons.bootstrap.min.css",
+        "src/inject/dataTables.bootstrap.min.css",
+        "src/inject/inject.css"
+      ]
+    },
+    {
+      "matches": [
+        "https://*/* ",
+        "https://davidsbridal.atlassian.net/*"
+      ],
+      "all_frames": true,
+      "js": [
+        "src/inject/jquery.min.js",
+        "src/inject/jquery.dataTables.min.js",
+        "src/inject/dataTables.buttons.min.js",
+        "src/inject/buttons.colVis.min.js",
+        "src/inject/buttons.html5.min.js",
+        "src/inject/buttons.print.min.js",
+        "src/inject/buttons.bootstrap.min.js",
+        "src/inject/jszip.min.js",
+        "src/inject/vfs_fonts.js",
+        "src/inject/pdfmake.min.js",
+        "src/inject/bootstrap.min.js",
+        "src/inject/jquery-ui.min.js",
+        "src/inject/grides.js",
+        "src/inject/inject.js",
+        "src/inject/jira.js",
+        "src/inject/utilities.js"
+      ]
+    }
+  ]
+}
+
+
